@@ -11,7 +11,7 @@ function ShowUsage {
         [System.Console]::Error.WriteLine("  /F を指定すると既に有効な署名が設定されているファイルも再署名します")
     } else {
         [System.Console]::Error.WriteLine("sign.ps1 [/F] <file1> [<file2>...]")
-        [System.Console]::Error.WriteLine("  Sign the file passed as arguments using Code-Signing-Signature.")
+        [System.Console]::Error.WriteLine("  Sign the file passed as arguments using Code-Signing-Certificate.")
         [System.Console]::Error.WriteLine("  Skip if a file has already valid signature.")
         [System.Console]::Error.WriteLine("  Argument files can select executable(.exe/.dll) or PowerShellScript(.ps1).")
         [System.Console]::Error.WriteLine("  /F  Sign all files include having valid signature.")
@@ -70,7 +70,7 @@ if ($Cert -eq $null) {
     if ($PSUICulture -eq "ja-JP") {
         [System.Console]::Error.WriteLine("端末にコードサイニング証明書がインストールされていません")
     } else {
-        [System.Console]::Error.WriteLine("Code-Signing-Signature is not found.")
+        [System.Console]::Error.WriteLine("Code-Signing-Certificate is not found.")
     }
     exit 1
 }
