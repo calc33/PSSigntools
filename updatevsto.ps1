@@ -2,46 +2,38 @@
 $TimestampServer = "http://timestamp.globalsign.com/scripts/timstamp.dll"
 
 function ShowUsage {
-  [System.Console]::Error.WriteLine("updatevsto.ps1 <file1.vsto> <file2.manifest> [files ...]")
-  [System.Console]::Error.WriteLine("  3番目以降の引数で渡したファイル(exe,dll等)を署名し")
-  [System.Console]::Error.WriteLine("  マニフェストファイルおよびVSTOファイルを署名付きで更新します")
+  [System.Console]::Error.WriteLine("updatevsto.ps1 <file.vsto>")
+  [System.Console]::Error.WriteLine("  引数で渡したVSTOファイルおよびそれに依存するマニフェストファイルの")
+  [System.Console]::Error.WriteLine("  コードサイニング署名を更新します")
   exit 1
 }
 
-if ($Args.Length -lt 2) {
-  ShowUsage
+function IsValidSignature($file) {
+  $info = New-Object -TypeName System.Diagnostics.ProcessStartInfo
+  $info.CreateNoWindow = $true
+  $info.UseShellExecute = $false
+  $info.RedirectStandardOutput = $true
+  $info.FileName = $mage
+  $info.Arguments = "-ver $file"
+  $proc = New-Object -TypeName System.Diagnostics.Process
+  $proc.StartInfo = $info
+  $f = $proc.Start()
+  $s = $proc.StandardOutput.ReadToEnd().Trim()
+  $flag = $s -eq "Manifest has a valid signature."
+  return $flag
 }
 
-[bool]$Found = $False
-$Files = @()
-$MageFiles = @()
-for ([int]$i = 2; $i -lt $Args.Length; $i++) {
-  $a = $Args[$i]
-  $Paths = Resolve-Path -Path $a -Relative
-  foreach ($f in $Paths) {
-    if ((Get-Item -Path $f).PSIsContainer) {
-      continue
-    }
-    $Sign = Get-AuthenticodeSignature -FilePath $f
-    if ($Force -or $Sign -eq $null -or $Sign.Status -ne "Valid") {
-      $Files += $f
-    } else {
-      Write-Output ($f + " は署名済みです。スキップします。")
-    }
-  }
-  $Found = $True
+if ($Args.Length -ne 1) {
+  ShowUsage
 }
 
 $Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert 
 if ($Cert -eq $null) {
-    [System.Console]::Error.WriteLine("端末にコードサイニング証明書がインストールされていません")
-    exit 0
+  [System.Console]::Error.WriteLine("端末にコードサイニング証明書がインストールされていません")
+  exit 1
 }
 
-if ($Files.Length -ne 0) {
-  Set-AuthenticodeSignature -Certificate $Cert -Filepath $Files -TimestampServer $TimestampServer
-}
-
+# mage.exe のパスを探索
 $mage = $null
 $progdir = (get-item "Registry::HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion").GetValue("ProgramFilesDir (x86)")
 foreach ($a in get-item "$progdir\Microsoft SDKs\Windows\*\bin\*\mage.exe" |Sort-Object -Propert LastWriteTime) {
@@ -52,8 +44,57 @@ if ($mage -eq $null) {
   exit 1
 }
 $thumb = $Cert.Thumbprint
-$vsto = $Args[0]
-$manifest = $Args[1]
+[string]$signopt = "-ch $thumb -ti $TimestampServer"
 
-Start-Process -FilePath "$mage" -ArgumentList "-u $manifest -ch $thumb -ti $TimestampServer" -Wait -NoNewWindow
-Start-Process -FilePath "$mage" -ArgumentList "-u $vsto -appm $manifest -ch $thumb -ti $TimestampServer" -Wait -NoNewWindow
+$vsto = $Args[0]
+$basedir = [System.IO.Path]::GetDirectoryName($vsto)
+$InvalidVsto = $false
+
+$xml = [xml](Get-Content($vsto))
+foreach ($elem in $xml.GetElementsByTagName("dependentAssembly")) {
+  $manifest = $elem.Attributes["codebase"].Value
+  $manpath = [System.io.Path]::Combine($basedir, $manifest)
+  $files = @()
+  [bool]$InvalidManifest = $false
+  foreach ($elem2 in $elem.ChildNodes) {
+    if ($elem2.LocalName -eq "assemblyIdentity") {
+      $file = $elem2.Attributes["name"].Value
+      $path = [System.IO.Path]::Combine($basedir, $file)
+      $sign = Get-AuthenticodeSignature -FilePath $path
+      if ($sign -eq $null -or $sign.Status -ne "Valid") {
+        $files += $path
+        $InvalidManifest = $true
+        $InvalidVsto = $true
+      } else {
+        if ((Get-Item $manpath).LastWriteTime -lt (Get-Item $path).LastWriteTime) {
+          $InvalidManifest = $true
+          $InvalidVsto = $true
+        }
+        Write-Output ($file + " は署名済みです。スキップします。")
+      }
+    }
+  }
+  if ($files.Length -ne 0) {
+    Set-AuthenticodeSignature -Certificate $Cert -Filepath $Files -TimestampServer $TimestampServer
+  }
+  if (-not $InvalidManifest -and -not (IsValidSignature($manpath))) {
+    $InvalidManifest = $true
+    $InvalidVsto = $true
+  }
+  if ($InvalidManifest) {
+    Start-Process -FilePath "$mage" -ArgumentList "-u ""$manpath"" $signopt" -Wait -NoNewWindow
+  } else {
+    Write-Output ($manifest + " は署名済みです。スキップします。")
+  }
+  if ((Get-Item $vsto).LastWriteTime -lt (Get-Item $manpath).LastWriteTime) {
+    $InvalidVsto = $true
+  }
+  if (-not $InvalidVsto -and -not (IsValidSignature($vsto))) {
+    $InvalidVsto = $true
+  }
+  if ($InvalidVsto) {
+    Start-Process -FilePath "$mage" -ArgumentList "-u ""$vsto"" -appm ""$manpath"" $signopt" -Wait -NoNewWindow
+  } else {
+    Write-Output ($vsto + " は署名済みです。スキップします。")
+  }
+}
