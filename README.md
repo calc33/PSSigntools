@@ -20,6 +20,7 @@ sign.bat は sign.ps1 を呼び出すバッチファイル。
 `  updatevsto.bat <ファイル.vsto>`
 ### 概要
 OfficeアドインのDLLに署名し、関連するマニフェストファイルおよびVSTOインストーラーを再署名する。  
+DLLに既に有効な署名がある場合は何もしない。
 
 updatevsto.bat は updatevsto.ps1 を呼び出すバッチファイル。  
 
