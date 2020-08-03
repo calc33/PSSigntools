@@ -1,35 +1,34 @@
 # PSSigntools
-コードサイニング証明書を利用してexe/dllに署名するためのPowerShellスクリプト類
+PSSigntools are PowerShells scripts for signing exe/dll with Code signing certificate.
 
 ## sign.bat / sign.ps1
-### 書式
-` sign <ファイル1> [<ファイル2> ...]`
-### 概要
-引数で指定したファイルにコードサイニング証明書を使って署名する。署名できるファイルは  
-* 実行形式ファイル(.exe .dll)
-* PowerShellスクリプト(.ps1)
+### 
+` sign <file1> [<file2> ...]`
+### Overview
+Sign argument files with Code signing certificate.<br>
+Following files are available.
+* Executables(.exe .dll)
+* PowerShell scripts(.ps1)
 
-がある。
-指定したファイルに有効な署名がない場合のみ署名するため、
-既に有効な署名があるファイルに対しては何もしない。
+If a file already has a valid signature, the file is not signed.
 
-sign.bat は sign.ps1 を呼び出すバッチファイル。  
+sign.bat is a batch file calling sign.ps1.
 
 ## updatevsto.bat / updatevsto.ps1
-### 書式
-`  updatevsto.bat <ファイル.vsto>`
-### 概要
-OfficeアドインのDLLに署名し、関連するマニフェストファイルおよびVSTOインストーラーを再署名する。  
-DLLに既に有効な署名がある場合は何もしない。
+### Usage
+`  updatevsto.bat <file.vsto>`
+### Overview
 
-updatevsto.bat は updatevsto.ps1 を呼び出すバッチファイル。  
+Sign Microsoft Office add-in DLL file and related files like manifest file (*.manigest) and VSTO installer file (*.vsto).
 
-## sign / updatevsto 使用時の注意点
-コンピュータ上に有効なコードサイニング証明書が一つだけ登録されているという前提で
-コードサイニング証明書を探索して使用するため、
-複数のコードサイニング証明書を登録している環境での使用には適しません。
+If the DLL file already has a valid signature, the file is not signed.
 
-証明書の更新時期には古い証明書をアンインストールするなどの対応が必要になります。
+updatevsto.bat is a batch file calling updatevsto.ps1.
 
-タイムスタンプサーバーはGlobalSign http://timestamp.globalsign.com/scripts/timstamp.dll を
-スクリプト内に埋め込んでいるため、変更したい場合はスクリプトを直接書き換える必要があります。
+## NOTICE
+
+Sign/updatevsto works on the assumption that only one valid Code signing certificate is registered on the computer.
+When you renew the certificate, you will need uninstall old certificate.
+
+Timestamp server uses Globalsign(http://timestamp.globalsign.com/scripts/timstamp.dll).
+It is embedded in script, so if you want to change timestamp server, you have to change script.
