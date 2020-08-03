@@ -19,7 +19,7 @@ sign.bat is a batch file calling sign.ps1.
 `  updatevsto.bat <file.vsto>`
 ### Overview
 
-Sign Microsoft Office add-in DLL file and related files like manifest file (*.manigest) and VSTO installer file (*.vsto).
+Sign Microsoft Office add-in DLL file and related files like manifest file (\*.manigest) and VSTO installer file (\*.vsto).
 
 If the DLL file already has a valid signature, the file is not signed.
 
