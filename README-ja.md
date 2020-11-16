@@ -1,3 +1,5 @@
+[ [English](README.md) ]
+
 # PSSigntools
 コードサイニング証明書を利用してexe/dllに署名するためのPowerShellスクリプト類
 
@@ -33,3 +35,4 @@ updatevsto.bat は updatevsto.ps1 を呼び出すバッチファイル。
 
 タイムスタンプサーバーはGlobalSign http://timestamp.globalsign.com/scripts/timstamp.dll を
 スクリプト内に埋め込んでいるため、変更したい場合はスクリプトを直接書き換える必要があります。
+  
