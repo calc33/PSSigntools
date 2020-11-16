@@ -1,3 +1,5 @@
+[ [日本語](README-ja.md) ]
+
 # PSSigntools
 PSSigntools are PowerShells scripts for signing exe/dll with Code signing certificate.
 
