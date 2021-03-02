@@ -1,5 +1,5 @@
 # $TimestampServer は署名時に使用するタイムスタンプサーバー
-$TimestampServer = "http://timestamp.globalsign.com/scripts/timstamp.dll"
+$TimestampServer = "http://timestamp.digicert.com"
 
 function ShowUsage {
     if ($PSUICulture -eq "ja-JP") {
@@ -45,7 +45,7 @@ foreach ($a in $args) {
             continue
         }
         $Sign = Get-AuthenticodeSignature -FilePath $f
-        if ($Force -or $Sign -eq $null -or $Sign.Status -ne "Valid") {
+        if ($Force -or $Sign -eq $null -or $Sign.Status -ne "Valid" -or $Sign.TimeStamperCertificate -eq $null) {
             $Files += $f
         } else {
             if ($PSUICulture -eq "ja-JP") {
@@ -74,4 +74,4 @@ if ($Cert -eq $null) {
     }
     exit 1
 }
-Set-AuthenticodeSignature -Certificate $Cert -Filepath $Files -TimestampServer $TimestampServer
+Set-AuthenticodeSignature -Certificate $Cert -Filepath $Files -HashAlgorithm "SHA256" -TimestampServer $TimestampServer

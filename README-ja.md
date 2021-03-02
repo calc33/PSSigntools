@@ -33,6 +33,6 @@ updatevsto.bat は updatevsto.ps1 を呼び出すバッチファイル。
 
 証明書の更新時期には古い証明書をアンインストールするなどの対応が必要になります。
 
-タイムスタンプサーバーはGlobalSign http://timestamp.globalsign.com/scripts/timstamp.dll を
+タイムスタンプサーバーはDigiCert http://timestamp.digicert.com を
 スクリプト内に埋め込んでいるため、変更したい場合はスクリプトを直接書き換える必要があります。
   
