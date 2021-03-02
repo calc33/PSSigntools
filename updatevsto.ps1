@@ -8,7 +8,7 @@ function ShowUsage {
         [System.Console]::Error.WriteLine("  コードサイニング署名を更新します")
     } else {
         [System.Console]::Error.WriteLine("updatevsto.ps1 <file.vsto>")
-        [System.Console]::Error.WriteLine("  Update Code-Signing-Certificate of the .vsto-file passed as argument"
+        [System.Console]::Error.WriteLine("  Update Code-Signing-Certificate of the .vsto-file passed as argument")
         [System.Console]::Error.WriteLine("  and dependency files.")
     }
     exit 1
@@ -44,7 +44,7 @@ if ($Cert -eq $null) {
     exit 1
 }
 $thumb = $Cert.Thumbprint
-[string]$signopt = "-ch $thumb -ti $TimestampServer"
+[string]$signopt = "-ch $thumb -a sha256RSA -ti $TimestampServer"
 
 # mage.exe のパスを探索
 $mage = $null
@@ -101,7 +101,7 @@ foreach ($elem in $xml.GetElementsByTagName("dependentAssembly")) {
         $invalidVsto = $true
     }
     if ($invalidManifest) {
-        Start-Process -FilePath "$mage" -ArgumentList "-u ""$manPath"" $signopt -a sha256RSA -ti $TimestampServer" -Wait -NoNewWindow
+        Start-Process -FilePath "$mage" -ArgumentList "-u ""$manPath"" $signopt" -Wait -NoNewWindow
     } else {
         if ($PSUICulture -eq "ja-JP") {
             Write-Output ($manifest + " は署名済みです。スキップします。")
@@ -116,7 +116,7 @@ foreach ($elem in $xml.GetElementsByTagName("dependentAssembly")) {
         $invalidVsto = $true
     }
     if ($invalidVsto) {
-        Start-Process -FilePath "$mage" -ArgumentList "-u ""$vsto"" -appm ""$manPath"" $signopt -a sha256RSA -ti $TimestampServer" -Wait -NoNewWindow
+        Start-Process -FilePath "$mage" -ArgumentList "-u ""$vsto"" -appm ""$manPath"" $signopt" -Wait -NoNewWindow
     } else {
         if ($PSUICulture -eq "ja-JP") {
             Write-Output ($vsto + " は署名済みです。スキップします。")
