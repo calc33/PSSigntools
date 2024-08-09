@@ -65,7 +65,7 @@ if ($Files.Length -eq 0) {
     exit 0
 }
 
-$Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert 
+$Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Sort-Object -Property NotAfter -Descending | Select-Object -First 1
 if ($Cert -eq $null) {
     if ($PSUICulture -eq "ja-JP") {
         [System.Console]::Error.WriteLine("端末にコードサイニング証明書がインストールされていません")

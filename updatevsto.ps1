@@ -34,7 +34,7 @@ if ($Args.Length -ne 1) {
 }
 
 #コードサイニング証明書関連の情報を取得
-$Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert 
+$Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Sort-Object -Property NotAfter -Descending | Select-Object -First 1
 if ($Cert -eq $null) {
     if ($PSUICulture -eq "ja-JP") {
         [System.Console]::Error.WriteLine("端末にコードサイニング証明書がインストールされていません")
