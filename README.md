@@ -29,8 +29,9 @@ updatevsto.bat is a batch file calling updatevsto.ps1.
 
 ## NOTICE
 
-Sign/updatevsto works on the assumption that only one valid Code signing certificate is registered on the computer.
-When you renew the certificate, you will need uninstall old certificate.
+~~Sign/updatevsto works on the assumption that only one valid Code signing certificate is registered on the computer.
+When you renew the certificate, you will need uninstall old certificate.~~
+When multiple Code signing certificates are registered, use latest certificate.
 
 Timestamp server uses DigiCert(http://timestamp.digicert.com).
 It is embedded in script, so if you want to change timestamp server, you have to change script.
