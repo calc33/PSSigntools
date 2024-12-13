@@ -1,14 +1,14 @@
-# $TimestampServer ‚Í–¼‚Ég—p‚·‚éƒ^ƒCƒ€ƒXƒ^ƒ“ƒvƒT[ƒo[
+# $TimestampServer ã¯ç½²åæ™‚ã«ä½¿ç”¨ã™ã‚‹ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚µãƒ¼ãƒãƒ¼
 $TimestampServer = "http://timestamp.digicert.com"
 
 function ShowUsage {
     if ($PSUICulture -eq "ja-JP") {
-        [System.Console]::Error.WriteLine("sign.ps1 [/F] <ƒtƒ@ƒCƒ‹1> [<ƒtƒ@ƒCƒ‹2>...]")
-        [System.Console]::Error.WriteLine("  ˆø”‚Å“n‚µ‚½ƒtƒ@ƒCƒ‹‚É‘Î‚µ‚ÄƒR[ƒhƒTƒCƒjƒ“ƒO–¼‚µ‚Ü‚·")
-        [System.Console]::Error.WriteLine("  Šù‚É—LŒø‚È–¼‚ªİ’è‚³‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚Í–¼‚µ‚Ü‚¹‚ñ")
-        [System.Console]::Error.WriteLine("  ƒtƒ@ƒCƒ‹‚Í•¡”w’è‰Â”\‚Å‚·")
-        [System.Console]::Error.WriteLine("  ÀsŒ`®(.exe/.dll)‚¨‚æ‚ÑPowerShellScript(.ps1)‚Ìƒtƒ@ƒCƒ‹‚ªw’è‰Â”\‚Å‚·")
-        [System.Console]::Error.WriteLine("  /F ‚ğw’è‚·‚é‚ÆŠù‚É—LŒø‚È–¼‚ªİ’è‚³‚ê‚Ä‚¢‚éƒtƒ@ƒCƒ‹‚àÄ–¼‚µ‚Ü‚·")
+        [System.Console]::Error.WriteLine("sign.ps1 [/F] <ãƒ•ã‚¡ã‚¤ãƒ«1> [<ãƒ•ã‚¡ã‚¤ãƒ«2>...]")
+        [System.Console]::Error.WriteLine("  å¼•æ•°ã§æ¸¡ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã—ã¦ã‚³ãƒ¼ãƒ‰ã‚µã‚¤ãƒ‹ãƒ³ã‚°ç½²åã—ã¾ã™")
+        [System.Console]::Error.WriteLine("  æ—¢ã«æœ‰åŠ¹ãªç½²åãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã¯ç½²åã—ã¾ã›ã‚“")
+        [System.Console]::Error.WriteLine("  ãƒ•ã‚¡ã‚¤ãƒ«ã¯è¤‡æ•°æŒ‡å®šå¯èƒ½ã§ã™")
+        [System.Console]::Error.WriteLine("  å®Ÿè¡Œå½¢å¼(.exe/.dll)ãŠã‚ˆã³PowerShellScript(.ps1)ã®ãƒ•ã‚¡ã‚¤ãƒ«ãŒæŒ‡å®šå¯èƒ½ã§ã™")
+        [System.Console]::Error.WriteLine("  /F ã‚’æŒ‡å®šã™ã‚‹ã¨æ—¢ã«æœ‰åŠ¹ãªç½²åãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚‚å†ç½²åã—ã¾ã™")
     } else {
         [System.Console]::Error.WriteLine("sign.ps1 [/F] <file1> [<file2>...]")
         [System.Console]::Error.WriteLine("  Sign the file passed as arguments using Code-Signing-Certificate.")
@@ -39,7 +39,7 @@ foreach ($a in $args) {
     if ($a[0] -eq "/") {
         continue
     }
-    $Paths = Resolve-Path -Path $a -Relative
+    $Paths = Resolve-Path -Path $a
     foreach ($f in $Paths) {
         if ((Get-Item -Path $f).PSIsContainer) {
             continue
@@ -49,7 +49,7 @@ foreach ($a in $args) {
             $Files += $f
         } else {
             if ($PSUICulture -eq "ja-JP") {
-                Write-Output ($f + " ‚Í–¼Ï‚İ‚Å‚·BƒXƒLƒbƒv‚µ‚Ü‚·B")
+                Write-Output ($f + " ã¯ç½²åæ¸ˆã¿ã§ã™ã€‚ã‚¹ã‚­ãƒƒãƒ—ã—ã¾ã™ã€‚")
             } else {
                 Write-Output ($f + " is already singed. Skip.")
             }
@@ -68,7 +68,7 @@ if ($Files.Length -eq 0) {
 $Cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Sort-Object -Property NotAfter -Descending | Select-Object -First 1
 if ($Cert -eq $null) {
     if ($PSUICulture -eq "ja-JP") {
-        [System.Console]::Error.WriteLine("’[––‚ÉƒR[ƒhƒTƒCƒjƒ“ƒOØ–¾‘‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ")
+        [System.Console]::Error.WriteLine("ç«¯æœ«ã«ã‚³ãƒ¼ãƒ‰ã‚µã‚¤ãƒ‹ãƒ³ã‚°è¨¼æ˜æ›¸ãŒã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã¾ã›ã‚“")
     } else {
         [System.Console]::Error.WriteLine("Code-Signing-Certificate is not found.")
     }
