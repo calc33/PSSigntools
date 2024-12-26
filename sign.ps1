@@ -48,10 +48,11 @@ foreach ($a in $args) {
         if ($Force -or $Sign -eq $null -or $Sign.Status -ne "Valid" -or $Sign.TimeStamperCertificate -eq $null) {
             $Files += $f
         } else {
+            $s = Resolve-Path -Path $f -Relative
             if ($PSUICulture -eq "ja-JP") {
-                Write-Output ($f + " は署名済みです。スキップします。")
+                Write-Output ("$s は署名済みです。スキップします。")
             } else {
-                Write-Output ($f + " is already singed. Skip.")
+                Write-Output ("$s is already singed. Skip.")
             }
         }
     }
